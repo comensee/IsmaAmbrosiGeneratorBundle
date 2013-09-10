@@ -1,0 +1,21 @@
+
+        {%set var_name = document|lower%}
+        {% set var_sub_name = subdocument|lower%}
+    /**
+     * @Rest\View
+     */
+    public function delete{{subdocument}}sAction($id, ${{var_sub_name}}_id)
+    {
+        $dm = $this->get('doctrine_mongodb');
+        ${{document}} = $dm->getRepository("{{bundle}}:{{document}}")->findOneById($id);
+        
+	    foreach(${{var_name}}->get{{document}}s() as ${{subdocument}}): 
+                if(${{subdocument}}->getId()==${{subdocument}}_id):
+                    ${{var_name}}->get{{subdocument}}s()->removeElement(${{var_sub_name}});
+                    $dm->getManager()->flush(${{var_name}}, array('safe' => true, 'fsync' => true));
+                    return array("message"=> "{{var_sub_name}} deleted for {{var_name}}");
+                endif;
+            endforeach;
+            
+
+    }

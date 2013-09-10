@@ -1,0 +1,14 @@
+    
+    /**
+     * @Rest\View
+     */
+    public function get{{document}}Action($id)
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+            {%set var_name = document|lower%}
+        ${{var_name}} = $dm->getRepository("{{ bundle }}:{{ document }}")->find($id);
+        if (!${{var_name}} instanceof {{document}}) {
+            throw new NotFoundHttpException('{{document}} not found');
+        }
+        return array('{{var_name}}' => ${{var_name}});
+    }

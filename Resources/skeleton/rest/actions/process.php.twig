@@ -1,0 +1,27 @@
+    
+    
+    {%set var_name=document|lower%}
+    private function processForm({{document}} ${{var_name}})
+    {
+        $statusCode = 201;
+
+        $form = $this->createForm(new {{document}}Type(), ${{var_name}});
+        $form->bind($this->getRequest());
+        if ($form->isValid()) {
+            $this->get('doctrine_mongodb')->getManager()->persist(${{var_name}});
+            $this->get('doctrine_mongodb')->getManager()->flush();
+
+            $response = new Response(json_encode(array('{{var_name}}_id' => ${{var_name}}->getId())));
+            $response->setStatusCode($statusCode);
+            $response->headers->set('Location',
+                $this->generateUrl(
+                    'get_{{var_name}}s', array('id' => ${{var_name}}->getId()),
+                    true // absolute
+                )
+            );
+
+            return $response;
+        }
+
+        return View::create($form, 400);
+    }

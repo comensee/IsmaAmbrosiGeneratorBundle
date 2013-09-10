@@ -1,0 +1,13 @@
+
+    /**
+     * @Rest\View
+     */
+    public function delete{{document}}Action($id)
+    {
+        {%set var_name = document|lower%}
+        $dm = $this->get('doctrine_mongodb');
+        ${{var_name}} = $dm->getRepository("{{bundle}}:{{document}}")->findOneById($id);
+        $this->get('doctrine_mongodb')->getManager()->remove(${{var_name}});
+        $this->get('doctrine_mongodb')->getManager()->flush();
+        return array('message'=>'{{document}} deleted');
+    }

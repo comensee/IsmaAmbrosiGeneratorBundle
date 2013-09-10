@@ -1,0 +1,32 @@
+<?php
+
+namespace {{ namespace }}\Controller{{ controller_namespace ? '\\' ~ controller_namespace : '' }}\{{document}};
+
+
+use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\Response;
+use FOS\RestBundle\View\View;
+use Api\Bundle\Controller\BaseController;
+use {{ namespace }}\Document\{{ document }};
+use {{ namespace }}\Form\{{ document }}Type;
+use {{ namespace }}\Document\{{ subdocument }};
+use {{ namespace }}\Form\{{ subdocument }}Type;
+
+/**
+ * {{ document }} controller.
+{% if 'annotation' == format %}
+ *
+ * @Route("/{{ route_prefix }}")
+{% endif %}
+ */
+class {{ subdocument }}Controller extends BaseController
+{
+
+        {%- include 'actions/post.php.twig'%}
+
+        {%- include 'actions/delete.php.twig'%}
+
+        {%- include 'actions/process.php.twig'%}
+}

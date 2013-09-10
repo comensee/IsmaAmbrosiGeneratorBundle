@@ -1,0 +1,11 @@
+
+    /**
+     * @Rest\View
+     */
+    public function patch{{document}}Action($id)
+    {
+        {% set var_name = document|lower%}
+        $dm = $this->get('doctrine_mongodb');
+        ${{var_name}} = $dm->getRepository("{{bundle}}:{{document}}")->findOneById($id);
+        return $this->processForm(${{var_name}});     
+    }

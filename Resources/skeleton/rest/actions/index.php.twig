@@ -1,0 +1,10 @@
+    
+    /**
+     * @Rest\View
+     */
+    public function getTestsAction()
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $var_name = $dm->getRepository("{{ bundle }}:{{ document }}")->findAll()->toArray();
+        return array('var_name' => $var_name);
+    }

@@ -1,0 +1,17 @@
+
+    /**
+     * @Rest\View
+     */
+    public function post{{subdocument}}sAction($id)
+    {
+        {% set var_name = document|lower%}
+        {% set var_sub_name = subdocument|lower%}
+        $dm = $this->get('doctrine_mongodb');
+        ${{var_name}} = $dm->getRepository("{{bundle}}:{{document}}")->find($id);
+        if(${{var_name}} instanceof {{document}}):
+            ${{var_sub_name}} = new {{subdocument}}($dm);
+            return $this->processForm(${{var_name}}, ${{var_sub_name}});
+            throw new \Exception('You don\'t have enough right to create an {{subdocument}}');
+        endif;
+        throw new \Exception("{{document}} not found");     
+    }

@@ -1,0 +1,11 @@
+    
+    /**
+     * @Rest\View
+     */
+    public function get{{document}}sAction()
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        {%set var_name = document|lower ~ 's'%}
+        ${{var_name}} = $dm->getRepository("{{ bundle }}:{{ document }}")->findAll()->toArray();
+        return array('{{var_name}}' => ${{var_name}});
+    }
