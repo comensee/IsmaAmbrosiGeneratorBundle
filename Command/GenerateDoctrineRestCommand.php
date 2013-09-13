@@ -54,8 +54,8 @@ Using the --with-write option allows to generate the new, edit and delete action
 <info>php app/console doctrine:mongodb:generate:crud --document=AcmeBlogBundle:Post --route-prefix=post_admin --with-write</info>
 EOT
             )
-            ->setName('doctrine:mongodb:generate:rest')
-            ->setAliases(array('generate:doctrine:mongodb:rest'));
+            ->setName('doctrine:mongodb:generate:rest:top')
+            ->setAliases(array('generate:doctrine:mongodb:rest:top'));
     }
 
     /**
@@ -85,10 +85,11 @@ EOT
 
         $documentClass = $this->getDocumentNamespace($bundle).'\\'.$document;
         $metadata      = $this->getDocumentMetadata($documentClass);
-        $bundle = $input->getOption('destination') ? $this->getBundle($input->getOption('destination')): $bundle;
+        $destination = $input->getOption('destination') ? $this->getBundle($input->getOption('destination')): $bundle;
+        $bundle = $this->getBundle($bundle);
 
         $generator = $this->getGenerator();
-        $generator->generate($bundle, $document, $metadata, $format, $prefix, $withWrite);
+        $generator->generate($destination, $document, $metadata, $format, $prefix, $withWrite, $bundle);
 
         $output->writeln('Generating the REST code: <info>OK</info>');
 
@@ -103,7 +104,7 @@ EOT
 
         // routing
         if ('annotation' != $format) {
-            call_user_func($runner, $this->updateRouting($dialog, $input, $output, $bundle, $format, $document, $prefix));
+            call_user_func($runner, $this->updateRouting($dialog, $input, $output, $destination, $format, $document, $prefix));
         }
 
         $dialog->writeGeneratorSummary($output, $errors);
@@ -261,11 +262,11 @@ EOT
         $output->write('Importing the REST routes: ');
 
         $base_routing = new RestRoutingManipulator($this->getContainer()->getParameter('kernel.root_dir').'/config/routing.yml');
-        $base_routing->addResource($bundle->getName(), $document,$format, '/api', 'routing/'.strtolower(str_replace('\\', '_', $document).'_routing'), true);
+        $base_routing->addResource($bundle->getName(), $document,null,$format, '/api', 'routing/'.strtolower(str_replace('\\', '_', $document).'_routing'), true);
 
         $this->getFilesystem()->mkdir($bundle->getPath().'/Resources/config/routing/');
         $routing = new RestRoutingManipulator($bundle->getPath().'/Resources/config/routing/'.strtolower($document).'_routing.yml');
-        $ret     = $auto ? $routing->addResource($bundle->getNamespace(), $document, $format, $document.'/'.$document.'Controller', $document.'Controller') : false;
+        $ret     = $auto ? $routing->addResource($bundle->getNamespace(), $document, null,$format, $document.'/'.$document.'Controller', $document.'Controller') : false;
         if (!$ret) {
             $help = sprintf("        <comment>resource: \"@%s/Resources/config/routing/%s.%s\"</comment>\n", $bundle->getName(), strtolower(str_replace('\\', '_', $document)), $format);
             $help .= sprintf("        <comment>prefix:   /%s</comment>\n", $prefix);

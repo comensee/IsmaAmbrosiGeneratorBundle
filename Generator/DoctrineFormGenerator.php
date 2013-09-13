@@ -61,13 +61,12 @@ class DoctrineFormGenerator extends Generator
      *
      * @throws \RuntimeException
      */
-    public function generate(BundleInterface $bundle, $document, ClassMetadataInfo $metadata)
+    public function generate(BundleInterface $source, BundleInterface $bundle, $document, ClassMetadataInfo $metadata)
     {
         $parts = explode('\\', $document);
         $class = array_pop($parts);
-
         $this->className = $class.'Type';
-        $dirPath         = $bundle->getPath().'/Form';
+        $dirPath         = $bundle->getPath().'/Form/Type';
         $this->classPath = $dirPath.'/'.str_replace('\\', '/', $document).'Type.php';
 
         if (file_exists($this->classPath)) {
@@ -84,11 +83,12 @@ class DoctrineFormGenerator extends Generator
         $this->renderFile('FormType.php', $this->classPath, array(
             'dir'                => $this->skeletonDir,
             'fields'             => $this->getFieldsFromMetadata($metadata),
+            'source_namespace'          => $source->getNamespace(),
             'namespace'          => $bundle->getNamespace(),
             'document_class'     => $class,
             'document_namespace' => implode('\\', $parts),
             'form_class'         => $this->className,
-            'form_type_name'     => strtolower(str_replace('\\', '_', $bundle->getNamespace()).($parts ? '_' : '').implode('_', $parts).'_'.$this->className),
+            'form_type_name'     => strtolower(str_replace('Type', '',$this->className)),
         ));
     }
 
@@ -109,6 +109,11 @@ class DoctrineFormGenerator extends Generator
             $fields = array_diff($fields, array($metadata->identifier));
         }
 
-        return $fields;
+        $new_fields = array();
+        foreach($fields as $field){
+            $field_ = $metadata->getFieldMapping($field);
+            $new_fields[] = $field_;
+        }
+        return $new_fields;
     }
 }

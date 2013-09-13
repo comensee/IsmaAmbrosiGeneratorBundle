@@ -9,10 +9,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\View\View;
 use Api\Bundle\Controller\BaseController;
-use {{ namespace }}\Document\{{ document }};
-use {{ namespace }}\Form\{{ document }}Type;
-use {{ namespace }}\Document\{{ subdocument }};
-use {{ namespace }}\Form\{{ subdocument }}Type;
+use {{ source_namespace }}\Document\{{ document }};
+use {{ namespace }}\Form\Type\{{ document }}Type;
+use {{ source_namespace }}\Document\{{ subdocument }};
+use {{ namespace }}\Form\Type\{{ subdocument }}Type;
 
 /**
  * {{ document }} controller.
@@ -25,8 +25,16 @@ class {{ subdocument }}Controller extends BaseController
 {
 
         {%- include 'actions/post.php.twig'%}
+        {%if 'set' in actions %}
+        
+            {%- include 'actions/delete_set.php.twig'%}
 
-        {%- include 'actions/delete.php.twig'%}
+            {%- include 'actions/process_set.php.twig'%}
+        {%else%}
 
-        {%- include 'actions/process.php.twig'%}
+            {%- include 'actions/delete.php.twig'%}
+
+            {%- include 'actions/process.php.twig'%}
+        {%endif%}
+
 }

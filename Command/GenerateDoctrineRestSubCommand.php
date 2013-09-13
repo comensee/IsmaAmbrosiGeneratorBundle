@@ -43,6 +43,7 @@ class GenerateDoctrineRestSubCommand extends GenerateDoctrineCommand
                 new InputOption('with-write', '', InputOption::VALUE_NONE, 'Whether or not to generate create, new and delete actions'),
                 new InputOption('format', '', InputOption::VALUE_REQUIRED, 'Use the format for configuration files (php, xml, yml, or annotation)', 'annotation'),
                 new InputOption('destination', '', InputOption::VALUE_REQUIRED, 'Where to create the generated files'),
+                new InputOption('set', '', InputOption::VALUE_OPTIONAL, 'If the subdocument has to be added or setted'),
             ))
             ->setDescription('Generates a CRUD based on a Sub Doctrine document')
             ->setHelp(<<<EOT
@@ -75,11 +76,12 @@ EOT
                 return 1;
             }
         }
+        $set = $input->getOption('set');
 
         $document = Validators::validateDocumentName($input->getOption('document'));
         $subdocument = Validators::validateDocumentName($input->getOption('subdocument'));
         list($bundle, $document) = $this->parseShortcutNotation($document);
-        list($bundle, $subdocument) = $this->parseShortcutNotation($subdocument);
+        list($subbundle, $subdocument) = $this->parseShortcutNotation($subdocument);
 
 
         $format    = Validators::validateFormat($input->getOption('format'));
@@ -90,10 +92,11 @@ EOT
 
         $documentClass = $this->getDocumentNamespace($bundle).'\\'.$document;
         $metadata      = $this->getDocumentMetadata($documentClass);
-        $bundle = $input->getOption('destination') ? $this->getBundle($input->getOption('destination')): $bundle;
+        $bundle = $this->getBundle($bundle);
+        $subbundle = $input->getOption('destination') ? $this->getBundle($input->getOption('destination')): $this->getBundle($bundle);
 
         $generator = $this->getGenerator();
-        $generator->generate($bundle, $document, $subdocument, $metadata, $format, $prefix, $withWrite);
+        $generator->generate($subbundle, $document, $subdocument, $metadata, $format, $prefix, $withWrite, $bundle, $set);
 
         $output->writeln('Generating the REST code: <info>OK</info>');
 

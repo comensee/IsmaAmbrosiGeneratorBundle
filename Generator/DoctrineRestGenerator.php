@@ -83,7 +83,7 @@ class DoctrineRestGenerator extends Generator
      *
      * @throws \RuntimeException
      */
-    public function generate(BundleInterface $bundle, $document, ClassMetadataInfo $metadata, $format, $routePrefix, $needWriteActions)
+    public function generate(BundleInterface $bundle, $document, ClassMetadataInfo $metadata, $format, $routePrefix, $needWriteActions, BundleInterface $sourcebundle = null)
     {
         $this->routePrefix     = $routePrefix;
         $this->routeNamePrefix = preg_replace('/[^\w]+/', '_', $routePrefix);
@@ -99,6 +99,7 @@ class DoctrineRestGenerator extends Generator
 
         $this->document = $document;
         $this->bundle   = $bundle;
+        $this->sourcebundle   = $sourcebundle;
         $this->metadata = $metadata;
         $this->setFormat($format);
 
@@ -188,6 +189,7 @@ class DoctrineRestGenerator extends Generator
             'document_class'       => $class,
             'namespace'            => $this->bundle->getNamespace(),
             'controller_namespace' => $namespace,
+            'source_namespace'            => $this->sourcebundle->getNamespace(),
             'format'               => $this->format,
             'plural'               => true
         ));

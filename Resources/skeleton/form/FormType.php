@@ -1,19 +1,24 @@
 <?php
 
-namespace {{ namespace }}\Form{{ document_namespace ? '\\' ~ document_namespace : '' }};
+namespace {{ namespace }}\Form\Type\{{ document_namespace ? '\\' ~ document_namespace : '' }};
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
+use {{ namespace }}\Listener\Suscriber\PatchSubscriber;
+
 class {{ form_class }} extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $event_subscriber = new PatchSubscriber();
+        $builder->addEventSubscriber($event_subscriber); 
+
         $builder
         {%- for field in fields %}
 
-            ->add('{{ field }}')
+            ->add('{{ field.fieldName }}')
 
         {%- endfor %}
 
@@ -23,7 +28,8 @@ class {{ form_class }} extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => '{{ namespace }}\Document{{ document_namespace ? '\\' ~ document_namespace : '' }}\{{ document_class }}'
+            'data_class' => '{{ source_namespace }}\Document{{ document_namespace ? '\\' ~ document_namespace : '' }}\{{ document_class }}',
+            'csrf_protection'   => false,
         ));
     }
 

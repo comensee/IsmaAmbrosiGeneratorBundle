@@ -1,0 +1,19 @@
+
+        {%set var_name = document|lower%}
+        {% set var_sub_name = subdocument|lower%}
+    /**
+     * @Rest\View
+     */
+    public function delete{{subdocument}}sAction($id)
+    {
+        $dm = $this->get('doctrine_mongodb');
+        ${{document}} = $dm->getRepository("{{bundle}}:{{document}}")->findOneById($id);
+        
+            if(${{var_name}} instanceof {{document}}):
+                ${{var_name}}->set{{subdocument}}(null);
+                $this->get('doctrine_mongodb')->getManager()->flush();
+                return array('message'=>'{{var_sub_name}} deleted');
+            endif;
+            
+
+    }

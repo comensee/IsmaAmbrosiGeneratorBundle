@@ -40,6 +40,12 @@ class DoctrineRestSubGenerator extends Generator
     private $bundle;
 
     /**
+     * @var BundleInterface
+     */
+    private $sourcebundle;
+
+
+    /**
      * @var string
      */
     private $document;
@@ -88,11 +94,11 @@ class DoctrineRestSubGenerator extends Generator
      *
      * @throws \RuntimeException
      */
-    public function generate(BundleInterface $bundle, $document, $subdocument, ClassMetadataInfo $metadata, $format, $routePrefix, $needWriteActions)
+    public function generate(BundleInterface $bundle, $document, $subdocument, ClassMetadataInfo $metadata, $format, $routePrefix, $needWriteActions, BundleInterface $sourcebundle = null, $isSet = false )
     {
         $this->routePrefix     = $routePrefix;
         $this->routeNamePrefix = preg_replace('/[^\w]+/', '_', $routePrefix);
-        $this->actions         = array('get', 'post', 'delete');
+        $this->actions         = ($isSet) ?array('set', 'delete'):array('get', 'post', 'delete');
 
         if (count($metadata->identifier) > 1) {
             throw new \RuntimeException('The REST generator does not support document classes with multiple primary keys.');
@@ -104,6 +110,7 @@ class DoctrineRestSubGenerator extends Generator
 
         $this->document = $document;
         $this->subdocument = $subdocument;
+        $this->sourcebundle   = $sourcebundle;
         $this->bundle   = $bundle;
         $this->metadata = $metadata;
         $this->setFormat($format);
@@ -198,6 +205,7 @@ class DoctrineRestSubGenerator extends Generator
             'subdocument'          => $this->subdocument,
             'document_class'       => $class,
             'namespace'            => $this->bundle->getNamespace(),
+            'source_namespace'            => $this->sourcebundle->getNamespace(),
             'controller_namespace' => $namespace,
             'format'               => $this->format,
             'plural'               => true
